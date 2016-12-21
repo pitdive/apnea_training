@@ -9,8 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
-import android.os.Build;
-import android.os.Handler;
+import android.os.*;
 import android.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -26,8 +25,7 @@ import ru.megazlo.apnea.extend.BluetoothDeviceAdapter;
 
 /** Created by iGurkin on 26.10.2016. */
 // BT LE поддерживается с android 4.3
-//@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BluetoothPreference extends DialogPreference {
 
 	private final static int SCAN_PERIOD = 2000;
@@ -113,17 +111,6 @@ public class BluetoothPreference extends DialogPreference {
 		setSummary(val);
 	}
 
-	@Override
-	public void onActivityDestroy() {
-		super.onActivityDestroy();
-	}
-
-	@Override
-	protected void onBindDialogView(View view) {
-		super.onBindDialogView(view);
-		//list.setValue(getValue());
-	}
-
 	private void setBluetoothAddress(String address) {
 		scanLeDevice(false);
 		persistString(address);
@@ -136,12 +123,9 @@ public class BluetoothPreference extends DialogPreference {
 	protected void onDialogClosed(boolean positiveResult) {
 		if (positiveResult) {
 			list.clearFocus();
-			/*int newValue = list.getValue();
-			if (callChangeListener(newValue)) {
-				setValue(newValue);
-			}*/
 		}
 		super.onDialogClosed(positiveResult);
+		scanLeDevice(false);
 	}
 
 	private void scanLeDevice(final boolean enable) {
@@ -150,6 +134,7 @@ public class BluetoothPreference extends DialogPreference {
 				scanner = new Scanner(mBluetoothAdapter, mLeScanCallback);
 			}
 			scanner.startScanning();
+			AsyncTask.execute(scanner);
 		} else if (scanner != null) {
 			scanner.stopScanning();
 		}
@@ -157,10 +142,9 @@ public class BluetoothPreference extends DialogPreference {
 
 	private BluetoothAdapter.LeScanCallback mLeScanCallback = (device, rssi, bytes) -> ((Activity) getContext()).runOnUiThread(() -> {
 		adapter.addDevice(device, rssi);
-		Log.d("onLeScan", device.toString());
 	});
 
-	private static class Scanner extends Thread {
+	private static class Scanner implements Runnable {
 		private final BluetoothAdapter bluetoothAdapter;
 		private final BluetoothAdapter.LeScanCallback mLeScanCallback;
 
@@ -178,7 +162,6 @@ public class BluetoothPreference extends DialogPreference {
 		void startScanning() {
 			synchronized (this) {
 				isScanning = true;
-				start();
 			}
 		}
 
@@ -195,16 +178,16 @@ public class BluetoothPreference extends DialogPreference {
 				while (true) {
 					synchronized (this) {
 						if (!isScanning) {
-							break;
+							return;
 						}
 						bluetoothAdapter.startLeScan(mLeScanCallback);
 					}
-					sleep(SCAN_PERIOD);
+					Thread.sleep(SCAN_PERIOD);
 					synchronized (this) {
 						bluetoothAdapter.stopLeScan(mLeScanCallback);
 					}
 				}
-			} catch (InterruptedException ignore) {
+			} catch (Exception ignore) {
 			} finally {
 				bluetoothAdapter.stopLeScan(mLeScanCallback);
 			}

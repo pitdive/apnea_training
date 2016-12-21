@@ -1,14 +1,19 @@
 package ru.megazlo.apnea;
 
+import android.annotation.TargetApi;
 import android.app.Service;
 import android.bluetooth.*;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+
+import org.androidannotations.annotations.EService;
 
 import java.util.UUID;
 
 /** Created by iGurkin on 04.10.2016. */
+@EService
 public class BluetoothLeService extends Service {
 	private final static String TAG = BluetoothLeService.class.getSimpleName();
 
@@ -30,9 +35,9 @@ public class BluetoothLeService extends Service {
 
 	//public final static UUID UUID_HEART_RATE_MEASUREMENT = UUID.fromString(SampleGattAttributes.HEART_RATE_MEASUREMENT);
 
-	@Nullable
 	@Override
 	public IBinder onBind(Intent intent) {
+		int i = Build.VERSION_CODES.JELLY_BEAN_MR2;
 		return null;
 	}
 }
