@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.androidannotations.annotations.*;
 import org.androidannotations.annotations.sharedpreferences.Pref;
@@ -84,14 +85,21 @@ public class AlertService implements TextToSpeech.OnInitListener, Closeable {
 
 	private void notifyAlertVibrate() {
 		if (pref.notifyVibrate().get()) {
-			((Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE)).vibrate(VIBRATE_TIME);
+			vibrator.vibrate(VIBRATE_TIME);
 		}
 	}
 
 	private void notifyAlertSpeech(String textToSpeech) {
+		Log.i("TTS", textToSpeech);
+		showToast(textToSpeech);
 		if (pref.notifySpeech().get()) {
 			getTts().speak(textToSpeech, TextToSpeech.QUEUE_FLUSH, null);
 		}
+	}
+
+	@UiThread
+	void showToast(String text) {
+		Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
 	}
 
 	@Override

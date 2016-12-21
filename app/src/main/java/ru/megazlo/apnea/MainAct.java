@@ -1,8 +1,10 @@
 package ru.megazlo.apnea;
 
+import android.Manifest;
 import android.app.*;
 import android.content.*;
 import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,6 +30,8 @@ public class MainAct extends AppCompatActivity implements NavigationView.OnNavig
 
 	private final static String FRAGMENT_TAG = "CURRENT_FRAG_TAG";
 
+	private static final int PERMISSION_REQUEST_COARSE_LOCATION = 1;
+
 	private TableListFragment tabList = new TableListFragment_();
 
 	@ViewById(R.id.fab)
@@ -44,6 +48,10 @@ public class MainAct extends AppCompatActivity implements NavigationView.OnNavig
 		setTheme(R.style.AppTheme_NoActionBar);
 		super.onCreate(savedInstanceState);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+		/*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+			requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_COARSE_LOCATION);
+		}*/
 	}
 
 	@AfterViews

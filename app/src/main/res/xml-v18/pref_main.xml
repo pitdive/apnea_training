@@ -13,7 +13,6 @@
 		<SwitchPreference
 			android:defaultValue="false"
 			android:key="allowBluetooth"
-			android:enabled="false"
 			android:summary="@string/s_allow_bt"
 			android:title="@string/t_allow_bt"/>
 
@@ -21,7 +20,8 @@
 			android:defaultValue=""
 			android:dependency="allowBluetooth"
 			android:key="deviceAddress"
-			android:title="@string/pref_device_address"/>
+			android:title="@string/pref_device_address"
+			app:prefix="@string/pref_device_address"/>
 	</PreferenceCategory>
 
 	<PreferenceCategory

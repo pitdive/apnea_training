@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+	<ImageView
+		android:id="@+id/img_bt_icon"
+		android:layout_width="50sp"
+		android:layout_height="50sp"
+		android:layout_alignParentLeft="true"
+		android:contentDescription="@string/img_lungs"
+		android:paddingLeft="15sp"
+		android:tint="@color/colorPrimary"
+		android:src="@drawable/ic_bluetooth_device"/>
+
+	<TextView
+		android:id="@+id/dv_name"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center_vertical"
+		android:layout_marginLeft="15sp"
+		android:layout_toRightOf="@id/img_bt_icon"
+		android:text="@string/default_text"
+		android:textSize="18sp"
+		android:textStyle="bold"/>
+
+	<TextView
+		android:id="@+id/dv_address"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignBottom="@id/img_bt_icon"
+		android:layout_gravity="bottom"
+		android:layout_marginLeft="15sp"
+		android:layout_toRightOf="@id/img_bt_icon"
+		android:paddingBottom="4sp"
+		android:text="@string/default_text"
+		android:textSize="12sp"
+		android:textStyle="bold"/>
+</RelativeLayout>

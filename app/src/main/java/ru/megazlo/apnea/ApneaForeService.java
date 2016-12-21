@@ -121,7 +121,7 @@ public class ApneaForeService extends Service {
 	}
 
 	private int getCurrentMax() {
-		return currentItem.getState() == RowState.BREATHE ? currentItem.getBreathe() : currentItem.getHold();
+		return currentItem.getState() == RowState.BREATHE ? currentItem.getBreathe() + currentItem.getExtBreathe() : currentItem.getHold() + currentItem.getExtHold();
 	}
 
 	private TableApneaRow updateCurrentRow() throws EndCycleException {
