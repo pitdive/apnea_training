@@ -1,23 +1,26 @@
 package ru.megazlo.apnea;
 
-import android.annotation.TargetApi;
 import android.app.Service;
 import android.bluetooth.*;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 
 import org.androidannotations.annotations.EService;
+import org.androidannotations.annotations.SystemService;
+import org.androidannotations.annotations.sharedpreferences.Pref;
 
-import java.util.UUID;
+import ru.megazlo.apnea.service.ApneaPrefs_;
 
 /** Created by iGurkin on 04.10.2016. */
 @EService
 public class BluetoothLeService extends Service {
 	private final static String TAG = BluetoothLeService.class.getSimpleName();
 
-	private BluetoothManager mBluetoothManager;
+	@Pref
+	ApneaPrefs_ pref;
+	@SystemService
+	BluetoothManager bluetoothManager;
 	private BluetoothAdapter mBluetoothAdapter;
 	private String mBluetoothDeviceAddress;
 	private BluetoothGatt mBluetoothGatt;
