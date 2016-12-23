@@ -20,6 +20,7 @@
 		android:restoreAnyVersion="true"
 		android:screenOrientation="portrait"
 		android:supportsRtl="false"
+		android:name=".ApneaApplication_"
 		android:theme="@style/AppTheme">
 
 		<meta-data
