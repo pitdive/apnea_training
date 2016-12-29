@@ -1,7 +1,9 @@
 package ru.megazlo.apnea.frag;
 
+import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.content.*;
+import android.os.Build;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -124,7 +126,7 @@ public class TableDetailFragment extends Fragment implements FabClickListener {
 	private void setViewPlayPause(boolean isPlayClick) {
 		float scale = isPlayClick ? 1 : 0.5f;
 		final int visibleChild = isPlayClick ? View.VISIBLE : View.GONE;
-		buttonPane.animate().scaleX(scale).scaleY(scale).setDuration(200).start();
+		//buttonPane.animate().scaleX(scale).scaleY(scale).setDuration(200).start();
 		for (int i = 0; i < buttonPane.getChildCount(); i++) {
 			buttonPane.getChildAt(i).setVisibility(visibleChild);
 		}
@@ -175,6 +177,7 @@ public class TableDetailFragment extends Fragment implements FabClickListener {
 		}
 	}
 
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 	@Receiver(actions = OxiReceiver.ACTION)
 	void getDataOximeter(Intent intent) {
 		final int pulse = intent.getIntExtra(OxiReceiver.PULSE_VAL, -1);

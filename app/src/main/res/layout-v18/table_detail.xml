@@ -39,6 +39,44 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content">
 
+		<TextView
+			android:id="@+id/tv_heart_rate"
+			android:layout_width="56dp"
+			android:layout_height="wrap_content"
+			android:layout_alignTop="@id/arc_progress"
+			android:layout_toRightOf="@id/arc_progress"
+			android:gravity="right"
+			android:text="57"
+			android:textColor="@color/darker_gray"
+			android:textSize="30sp"/>
+
+		<ImageView
+			android:layout_width="14dp"
+			android:layout_height="14dp"
+			android:layout_alignTop="@id/tv_heart_rate"
+			android:layout_toRightOf="@id/tv_heart_rate"
+			android:src="@drawable/ic_heart"
+			android:tint="@color/chart_pulse"/>
+
+		<TextView
+			android:id="@+id/tv_heart_spo"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignRight="@id/tv_heart_rate"
+			android:layout_below="@id/tv_heart_rate"
+			android:text="99"
+			android:textColor="@color/darker_gray"
+			android:textSize="30sp"/>
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_alignTop="@id/tv_heart_spo"
+			android:layout_toRightOf="@id/tv_heart_spo"
+			android:text="@string/lb_spo"
+			android:textColor="@color/chart_spo"
+			android:textSize="12sp"/>
+
 		<RelativeLayout
 			android:id="@+id/control_pane"
 			android:layout_width="140dp"

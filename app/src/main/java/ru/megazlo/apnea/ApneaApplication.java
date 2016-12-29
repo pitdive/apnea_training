@@ -13,12 +13,14 @@ import ru.megazlo.apnea.receivers.BluetoothReceiver;
 @EApplication
 public class ApneaApplication extends Application {
 
-	BluetoothReceiver receiver = new BluetoothReceiver();
+	private BluetoothReceiver receiver = new BluetoothReceiver();
 
 	public void onCreate() {
 		super.onCreate();
-		IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
-		registerReceiver(receiver, filter);
-		BluetoothLeService_.intent(getBaseContext()).start();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+			IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
+			registerReceiver(receiver, filter);
+			BluetoothLeService_.intent(getBaseContext()).start();
+		}
 	}
 }

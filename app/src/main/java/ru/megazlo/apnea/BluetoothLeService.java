@@ -54,6 +54,7 @@ public class BluetoothLeService extends Service {
 		bluetoothAdapter = bluetoothManager.getAdapter();
 		if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
 			stopSelf();
+			return Service.START_NOT_STICKY;
 		}
 		BluetoothDevice device = bluetoothAdapter.getRemoteDevice(pref.deviceAddress().get());
 		bluetoothGatt = device.connectGatt(getBaseContext().getApplicationContext(), false, bleGattCallback);
@@ -62,10 +63,10 @@ public class BluetoothLeService extends Service {
 		for (BluetoothGattService service : services) {
 			List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
 			for (BluetoothGattCharacteristic characteristic : characteristics) {
-				bluetoothGatt.setCharacteristicNotification(characteristic, true);
+				/*bluetoothGatt.setCharacteristicNotification(characteristic, true);
 				BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
 				descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-				bluetoothGatt.writeDescriptor(descriptor);
+				bluetoothGatt.writeDescriptor(descriptor);*/
 			}
 			/*for (BluetoothGattDescriptor descriptor : characteristics.get(1).getDescriptors()) {
 				//find descriptor UUID that matches Client Characteristic Configuration (0x2902)
@@ -82,8 +83,10 @@ public class BluetoothLeService extends Service {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		bluetoothGatt.disconnect();
-		bluetoothGatt.close();
+		if (bluetoothGatt != null) {
+			bluetoothGatt.disconnect();
+			bluetoothGatt.close();
+		}
 	}
 
 	private final BluetoothGattCallback bleGattCallback = new BluetoothGattCallback() {
