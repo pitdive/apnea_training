@@ -11,8 +11,8 @@ Program for apnea training freediving
 - [x] add user tables
 - [ ] edit exist tables
 - [x] modern interface
-- [ ] heart rate monitor
-- [ ] heart rate graphics
+- [x] heart rate monitor
+- [x] heart rate graphics
 
 ![](https://lh3.googleusercontent.com/2IBmaehlLKCH-DyUhfqsl4Khl8BVDkjVkxOuS1u2p0OORoYYb2eZbBoXI_tCyD5vyHc=h310-rw)
 ![](https://lh3.googleusercontent.com/pp6bgMP80CNF9o6YZCNJM9n_nV8qJBA6jZb2n73CE616SwqqHDGgz0jXAvHpqUcxobi8=h310-rw)
