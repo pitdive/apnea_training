@@ -10,11 +10,12 @@ import android.util.Log;
 
 import org.androidannotations.annotations.EService;
 import org.androidannotations.annotations.SystemService;
+import org.androidannotations.annotations.res.StringRes;
 import org.androidannotations.annotations.sharedpreferences.Pref;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
+import ru.megazlo.apnea.receivers.OxiReceiver;
 import ru.megazlo.apnea.service.ApneaPrefs_;
 
 /** Created by iGurkin on 04.10.2016. */
@@ -28,21 +29,14 @@ public class BluetoothLeService extends Service {
 	@SystemService
 	BluetoothManager bluetoothManager;
 
-	private BluetoothAdapter bluetoothAdapter;
+	@StringRes(R.string.lb_empty_val)
+	String emptyVal;
+
+	private final static UUID CONF_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
+	private final static String CHAR_UUID = "cdeacb81-5235-4c07-8846-93a37ee6b86d";
+	private final static String SERVICE_UUID = "cdeacb80-5235-4c07-8846-93a37ee6b86d";
+
 	private BluetoothGatt bluetoothGatt;
-	private int mConnectionState = STATE_DISCONNECTED;
-
-	private static final int STATE_DISCONNECTED = 0;
-	private static final int STATE_CONNECTING = 1;
-	private static final int STATE_CONNECTED = 2;
-
-	public final static String ACTION_GATT_CONNECTED = "ru.megazlo.apnea.le.ACTION_GATT_CONNECTED";
-	public final static String ACTION_GATT_DISCONNECTED = "ru.megazlo.apnea.le.ACTION_GATT_DISCONNECTED";
-	public final static String ACTION_GATT_SERVICES_DISCOVERED = "ru.megazlo.apnea.le.ACTION_GATT_SERVICES_DISCOVERED";
-	public final static String ACTION_DATA_AVAILABLE = "ru.megazlo.apnea.le.ACTION_DATA_AVAILABLE";
-	public final static String EXTRA_DATA = "ru.megazlo.apnea.le.EXTRA_DATA";
-
-	//public final static UUID UUID_HEART_RATE_MEASUREMENT = UUID.fromString(SampleGattAttributes.HEART_RATE_MEASUREMENT);
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -51,32 +45,13 @@ public class BluetoothLeService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		bluetoothAdapter = bluetoothManager.getAdapter();
-		if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled()) {
+		BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
+		if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled() || pref.deviceAddress().get().isEmpty()) {
 			stopSelf();
 			return Service.START_NOT_STICKY;
 		}
 		BluetoothDevice device = bluetoothAdapter.getRemoteDevice(pref.deviceAddress().get());
-		bluetoothGatt = device.connectGatt(getBaseContext().getApplicationContext(), false, bleGattCallback);
-		bluetoothGatt.discoverServices();
-		List<BluetoothGattService> services = bluetoothGatt.getServices();
-		for (BluetoothGattService service : services) {
-			List<BluetoothGattCharacteristic> characteristics = service.getCharacteristics();
-			for (BluetoothGattCharacteristic characteristic : characteristics) {
-				/*bluetoothGatt.setCharacteristicNotification(characteristic, true);
-				BluetoothGattDescriptor descriptor = characteristic.getDescriptor(UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
-				descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-				bluetoothGatt.writeDescriptor(descriptor);*/
-			}
-			/*for (BluetoothGattDescriptor descriptor : characteristics.get(1).getDescriptors()) {
-				//find descriptor UUID that matches Client Characteristic Configuration (0x2902)
-				// and then call setValue on that descriptor
-				descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-				bluetoothGatt.writeDescriptor(descriptor);
-			}*/
-		}
-
-		int i = Build.VERSION_CODES.JELLY_BEAN_MR2;
+		bluetoothGatt = device.connectGatt(getBaseContext().getApplicationContext(), true, bleGattCallback);
 		return START_NOT_STICKY;
 	}
 
@@ -92,21 +67,49 @@ public class BluetoothLeService extends Service {
 	private final BluetoothGattCallback bleGattCallback = new BluetoothGattCallback() {
 
 		@Override
-		public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
-			Log.d(TAG, "onCharacteristicChanged");
-			// this will get called anytime you perform a read or write characteristic operation
+		public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic chr) {
+			if (CHAR_UUID.equals(chr.getUuid().toString())) {
+				final byte[] vl = chr.getValue();
+				if (vl[0] == -127) {
+					final int pulse = vl[1] & 0xFF;
+					//Log.d(TAG, "K " + pulse);//pulse
+					final int spo = vl[2] & 0xFF;
+					//Log.d(TAG, "M " + spo);//SpO2
+					//Log.d(TAG, "L " + (vl[3] & 0xFF));//piB
+
+					Intent tb = new Intent(OxiReceiver.ACTION);
+					tb.putExtra(OxiReceiver.PULSE_VAL, pulse == 255 ? emptyVal : Integer.toString(pulse));
+					tb.putExtra(OxiReceiver.SPO_VAL, spo == 127 ? emptyVal : Integer.toString(spo));
+					getApplication().sendBroadcast(tb);// урааа нахуй, победил!!!
+				}
+			}
 		}
 
 		@Override
 		public void onConnectionStateChange(final BluetoothGatt gatt, final int status, final int newState) {
-			Log.d(TAG, "onConnectionStateChange");
+			if (newState == BluetoothProfile.STATE_CONNECTED) {
+				Log.i(TAG, "Attempting to start service discovery:" + gatt.discoverServices());
+			}
 			// this will get called when a device connects or disconnects
 		}
 
 		@Override
 		public void onServicesDiscovered(final BluetoothGatt gatt, final int status) {
+			List<BluetoothGattService> services = gatt.getServices();
 			Log.d(TAG, "onServicesDiscovered");
-			// this will get called after the client initiates a BluetoothGatt.discoverServices() call
+			for (BluetoothGattService service : services) {
+				if (SERVICE_UUID.equals(service.getUuid().toString())) {
+					for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
+						if (CHAR_UUID.equals(characteristic.getUuid().toString())) {
+							gatt.setCharacteristicNotification(characteristic, true);
+
+							final BluetoothGattDescriptor descriptor = characteristic.getDescriptor(CONF_UUID);
+							descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+							gatt.writeDescriptor(descriptor);
+						}
+					}
+				}
+			}
 		}
 	};
 }

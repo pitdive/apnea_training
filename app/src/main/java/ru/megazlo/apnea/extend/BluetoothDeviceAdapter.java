@@ -19,7 +19,7 @@ public class BluetoothDeviceAdapter extends ArrayAdapter<BluetoothDevice> {
 	private final LayoutInflater inflater;
 
 	private final ArrayList<BluetoothDevice> leDevices = new ArrayList<>();
-	private final HashMap<BluetoothDevice, Integer> rssiMap = new HashMap<>();
+	private final HashMap<BluetoothDevice, String> rssiMap = new HashMap<>();
 
 	public BluetoothDeviceAdapter(Context context) {
 		super(context, R.layout.table_detail_row);
@@ -45,12 +45,12 @@ public class BluetoothDeviceAdapter extends ArrayAdapter<BluetoothDevice> {
 		return cView;
 	}
 
-	public void addDevice(BluetoothDevice device, int rssi) {
+	public void addDevice(BluetoothDevice device) {
 		if (!leDevices.contains(device) && device.getName() != null) {
 			leDevices.add(device);
 			notifyDataSetChanged();
 		}
-		rssiMap.put(device, rssi);
+		rssiMap.put(device, device.getAddress());
 	}
 
 	public BluetoothDevice getDevice(int position) {

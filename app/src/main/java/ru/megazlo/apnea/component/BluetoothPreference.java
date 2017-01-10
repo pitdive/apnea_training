@@ -2,8 +2,8 @@ package ru.megazlo.apnea.component;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.bluetooth.*;
+import android.bluetooth.le.*;
 import android.content.*;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
@@ -13,6 +13,9 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import ru.megazlo.apnea.BuildConfig;
 import ru.megazlo.apnea.R;
@@ -30,12 +33,12 @@ public class BluetoothPreference extends DialogPreference {
 	private String prefix;
 
 	private BluetoothAdapter mBluetoothAdapter;
-
 	private ListView list;
-
 	private BluetoothDeviceAdapter adapter;
-
 	private Scanner scanner;
+	private BluetoothAdapter.LeScanCallback mLeScanCallback;
+	private ScanCallback mScanCallback;
+	private BluetoothLeScanner mLEScanner;
 
 	public BluetoothPreference(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -83,6 +86,39 @@ public class BluetoothPreference extends DialogPreference {
 			setBluetoothAddress(item.getAddress());
 			BluetoothPreference.this.getDialog().dismiss();
 		});
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+			createScanCallback();
+			createLeScanner();
+		} else {
+			mLeScanCallback = (device, rssi, bytes) -> ((Activity) getContext()).runOnUiThread(() -> adapter.addDevice(device));
+		}
+	}
+
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	private void createScanCallback() {
+		mScanCallback = new ScanCallback() {
+			@Override
+			public void onScanResult(int callbackType, ScanResult result) {
+				BluetoothDevice device = result.getDevice();
+				Log.i("callbackType name ", device.getName() == null ? "null name " : device.getName());
+				adapter.addDevice(device);
+			}
+
+			@Override
+			public void onBatchScanResults(List<ScanResult> results) {
+				for (ScanResult sr : results) {
+					Log.i("Scan Item: ", sr.toString());
+				}
+			}
+		};
+	}
+
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	private void createLeScanner() {
+		if (mBluetoothAdapter != null) {
+			mLEScanner = mBluetoothAdapter.getBluetoothLeScanner();
+		}
 	}
 
 	@Override
@@ -121,7 +157,7 @@ public class BluetoothPreference extends DialogPreference {
 	private void scanLeDevice(final boolean enable) {
 		if (enable) {
 			if (scanner == null) {
-				scanner = new Scanner(mBluetoothAdapter, mLeScanCallback);
+				scanner = new Scanner(mBluetoothAdapter, mLeScanCallback, mLEScanner, mScanCallback);
 			}
 			scanner.startScanning();
 			AsyncTask.execute(scanner);
@@ -130,19 +166,25 @@ public class BluetoothPreference extends DialogPreference {
 		}
 	}
 
-	private BluetoothAdapter.LeScanCallback mLeScanCallback = (device, rssi, bytes) -> ((Activity) getContext()).runOnUiThread(() -> {
-		adapter.addDevice(device, rssi);
-	});
-
 	private static class Scanner implements Runnable {
 		private final BluetoothAdapter bluetoothAdapter;
 		private final BluetoothAdapter.LeScanCallback mLeScanCallback;
+		private ScanCallback mScanCallback;
+		private BluetoothLeScanner mLEScanner;
+		private ScanSettings scanSettings;
+		private List<ScanFilter> filters;
 
 		private volatile boolean isScanning = false;
 
-		Scanner(BluetoothAdapter adapter, BluetoothAdapter.LeScanCallback callback) {
+		Scanner(BluetoothAdapter adapter, BluetoothAdapter.LeScanCallback callback, BluetoothLeScanner leScaner, ScanCallback leCallback) {
 			bluetoothAdapter = adapter;
 			mLeScanCallback = callback;
+			mLEScanner = leScaner;
+			mScanCallback = leCallback;
+			if (Build.VERSION.SDK_INT > 21) {
+				scanSettings = new ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_BALANCED).build();
+				filters = new ArrayList<>();
+			}
 		}
 
 		public boolean isScanning() {
@@ -158,7 +200,8 @@ public class BluetoothPreference extends DialogPreference {
 		void stopScanning() {
 			synchronized (this) {
 				isScanning = false;
-				bluetoothAdapter.stopLeScan(mLeScanCallback);
+				stopScan();
+				//bluetoothAdapter.stopLeScan(mLeScanCallback);
 			}
 		}
 
@@ -170,16 +213,35 @@ public class BluetoothPreference extends DialogPreference {
 						if (!isScanning) {
 							return;
 						}
-						bluetoothAdapter.startLeScan(mLeScanCallback);
+						startScan();
+						//bluetoothAdapter.startLeScan(mLeScanCallback);
 					}
 					Thread.sleep(SCAN_PERIOD);
 					synchronized (this) {
-						bluetoothAdapter.stopLeScan(mLeScanCallback);
+						startScan();
+						//bluetoothAdapter.stopLeScan(mLeScanCallback);
 					}
 				}
 			} catch (Exception ignore) {
 			} finally {
+				stopScan();
+				//bluetoothAdapter.stopLeScan(mLeScanCallback);
+			}
+		}
+
+		private void stopScan() {
+			if (Build.VERSION.SDK_INT < 21) {
 				bluetoothAdapter.stopLeScan(mLeScanCallback);
+			} else {
+				mLEScanner.stopScan(mScanCallback);
+			}
+		}
+
+		private void startScan() {
+			if (Build.VERSION.SDK_INT < 21) {
+				bluetoothAdapter.startLeScan(mLeScanCallback);
+			} else {
+				mLEScanner.startScan(filters, scanSettings, mScanCallback);
 			}
 		}
 	}

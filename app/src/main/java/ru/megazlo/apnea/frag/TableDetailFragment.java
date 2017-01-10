@@ -45,6 +45,10 @@ public class TableDetailFragment extends Fragment implements FabClickListener {
 	ListView listView;
 	@ViewById(R.id.control_pane)
 	RelativeLayout buttonPane;
+	@ViewById(R.id.tv_heart_spo)
+	TextView tvHeartSpo;
+	@ViewById(R.id.tv_heart_rate)
+	TextView tvHeartRate;
 
 	private void updateViews(int progress) {
 		if (tableApnea != null && tableApnea.getRows() != null) {
@@ -180,7 +184,13 @@ public class TableDetailFragment extends Fragment implements FabClickListener {
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 	@Receiver(actions = OxiReceiver.ACTION)
 	void getDataOximeter(Intent intent) {
-		final int pulse = intent.getIntExtra(OxiReceiver.PULSE_VAL, -1);
-		final int spo = intent.getIntExtra(OxiReceiver.SPO_VAL, -1);
+		final String pulse = intent.getStringExtra(OxiReceiver.PULSE_VAL);
+		final String spo = intent.getStringExtra(OxiReceiver.SPO_VAL);
+		if (spo != null) {
+			tvHeartSpo.setText(spo);
+		}
+		if (pulse != null) {
+			tvHeartRate.setText(pulse);
+		}
 	}
 }

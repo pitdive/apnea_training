@@ -39,10 +39,10 @@ android {
 	defaultConfig {
 		applicationId "ru.megazlo.apnea"
 		minSdkVersion 14
-		targetSdkVersion 21
-		versionCode 11
+		targetSdkVersion 25
+		versionCode 13
 		versionName '2.0'
-		versionNameSuffix 'preview 3'
+		versionNameSuffix 'beta 1'
 	}
 	compileOptions {
 		sourceCompatibility JavaVersion.VERSION_1_8
