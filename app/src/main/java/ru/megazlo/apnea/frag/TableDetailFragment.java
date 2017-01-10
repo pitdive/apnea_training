@@ -186,10 +186,10 @@ public class TableDetailFragment extends Fragment implements FabClickListener {
 	void getDataOximeter(Intent intent) {
 		final String pulse = intent.getStringExtra(OxiReceiver.PULSE_VAL);
 		final String spo = intent.getStringExtra(OxiReceiver.SPO_VAL);
-		if (spo != null) {
+		if (spo != null && tvHeartSpo != null) {
 			tvHeartSpo.setText(spo);
 		}
-		if (pulse != null) {
+		if (pulse != null && tvHeartRate != null) {
 			tvHeartRate.setText(pulse);
 		}
 	}

@@ -1,11 +1,14 @@
 package ru.megazlo.apnea.frag;
 
+import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import org.androidannotations.annotations.*;
 import org.androidannotations.annotations.res.ColorRes;
@@ -20,7 +23,9 @@ import ru.megazlo.apnea.component.Utils;
 import ru.megazlo.apnea.receivers.OxiReceiver;
 import ru.megazlo.apnea.service.ApneaPrefs_;
 
-/** Created by iGurkin on 05.09.2016. */
+/**
+ * Created by iGurkin on 05.09.2016.
+ */
 @EFragment(R.layout.record_view)
 public class RecordFragment extends Fragment implements FabClickListener {
 
@@ -34,9 +39,12 @@ public class RecordFragment extends Fragment implements FabClickListener {
 
 	@ViewById(R.id.arc_record)
 	ArcProgress progress;
-
 	@ViewById(R.id.start_record)
 	Button button;
+	@ViewById(R.id.tv_rec_spo)
+	TextView tvHeartSpo;
+	@ViewById(R.id.tv_rec_heart)
+	TextView tvHeartRate;
 
 	@AfterViews
 	void afterView() {
@@ -62,11 +70,17 @@ public class RecordFragment extends Fragment implements FabClickListener {
 	}
 
 	private void stopTimer() {
+		stopTimer(true);
+	}
+
+	private void stopTimer(boolean changeState) {
 		if (timer != null) {
 			timer.cancel();
 			timer = null;
 		}
-		setButtonState(R.drawable.ic_play_white);
+		if (changeState) {
+			setButtonState(R.drawable.ic_play_white);
+		}
 	}
 
 	private void setButtonState(int resId) {
@@ -87,13 +101,12 @@ public class RecordFragment extends Fragment implements FabClickListener {
 
 	@Override
 	public void clickByContext(View view) {
-
 	}
 
 	@Override
 	public void onDestroy() {
 		if (timer != null) {
-			stopTimer();
+			stopTimer(false);
 		}
 		super.onDestroy();
 	}
@@ -112,10 +125,17 @@ public class RecordFragment extends Fragment implements FabClickListener {
 		return true;
 	}
 
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 	@Receiver(actions = OxiReceiver.ACTION)
 	void getDataOximeter(Intent intent) {
-		final int pulse = intent.getIntExtra(OxiReceiver.PULSE_VAL, -1);
-		final int spo = intent.getIntExtra(OxiReceiver.SPO_VAL, -1);
+		final String pulse = intent.getStringExtra(OxiReceiver.PULSE_VAL);
+		final String spo = intent.getStringExtra(OxiReceiver.SPO_VAL);
+		if (spo != null && tvHeartSpo != null) {
+			tvHeartSpo.setText(spo);
+		}
+		if (pulse != null && tvHeartRate != null) {
+			tvHeartRate.setText(pulse);
+		}
 	}
 
 	class RecordTask extends TimerTask {
@@ -123,13 +143,15 @@ public class RecordFragment extends Fragment implements FabClickListener {
 		public void run() {
 			getActivity().runOnUiThread(() -> {
 				final int totalSeconds = Utils.getTotalSeconds(pref.bestRecord().get());
-				if (progress.getProgress() < totalSeconds) {
-					progress.setProgress(progress.getProgress() + 1);
-				} else if (progress.getProgress() == totalSeconds) {
-					if (progress.getUnfinishedStrokeColor() != colorAccent) {
-						progress.setUnfinishedStrokeColor(colorAccent);
+				if (progress != null) {
+					if (progress.getProgress() < totalSeconds) {
+						progress.setProgress(progress.getProgress() + 1);
+					} else if (progress.getProgress() == totalSeconds) {
+						if (progress.getUnfinishedStrokeColor() != colorAccent) {
+							progress.setUnfinishedStrokeColor(colorAccent);
+						}
+						progress.setMax(progress.getMax() + 1);
 					}
-					progress.setMax(progress.getMax() + 1);
 				}
 			});
 		}
