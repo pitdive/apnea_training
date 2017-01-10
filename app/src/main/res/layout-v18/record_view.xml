@@ -49,7 +49,7 @@
 			android:layout_height="wrap_content"
 			android:layout_marginLeft="40sp"
 			android:layout_toRightOf="@id/tv_rec_heart"
-			android:text="99"
+			android:text="@string/lb_empty_val"
 			android:textSize="38sp"/>
 
 		<TextView

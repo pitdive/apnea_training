@@ -1,12 +1,10 @@
 package ru.megazlo.apnea.component;
 
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.*;
-import android.bluetooth.le.*;
-import android.content.Context;
-import android.content.Intent;
+import android.content.*;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.os.*;
@@ -15,9 +13,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.*;
 import android.widget.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import ru.megazlo.apnea.BuildConfig;
 import ru.megazlo.apnea.R;
@@ -53,6 +48,7 @@ public class BluetoothPreference extends DialogPreference {
 	}
 
 	private void initStyles(Context context, AttributeSet attrs, int defStyleAttr) {
+		setDialogLayoutResource(R.layout.bth_list_dialog);
 		setPositiveButtonText("");
 		setNegativeButtonText(R.string.cancel);
 		TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.TimePreference, defStyleAttr, 0);
@@ -61,35 +57,32 @@ public class BluetoothPreference extends DialogPreference {
 	}
 
 	@Override
-	protected View onCreateDialogView() {
-		FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-		layoutParams.gravity = Gravity.CENTER;
-
-		list = new ListView(getContext());
-		list.setLayoutParams(layoutParams);
-
-		adapter = new BluetoothDeviceAdapter(getContext());
-		list.setAdapter(adapter);
-		list.setOnItemClickListener((adapterView, view, i, l) -> {
-			Log.d("BluetoothPreference", "item selected " + i);
-			final BluetoothDevice item = adapter.getItem(i);
-			setBluetoothAddress(item.getAddress());
-			BluetoothPreference.this.getDialog().dismiss();
-		});
-
-		FrameLayout dialogView = new FrameLayout(getContext());
-		dialogView.addView(list);
-
+	protected void showDialog(Bundle state) {
 		final BluetoothManager bluetoothManager = (BluetoothManager) getContext().getSystemService(Context.BLUETOOTH_SERVICE);
 		mBluetoothAdapter = bluetoothManager.getAdapter();
 		if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
 			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 			((Activity) getContext()).startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-			Toast.makeText(getContext(), "You must enable bluetooth", Toast.LENGTH_SHORT).show();
-		} else {
-			scanLeDevice(true);
+			Toast.makeText(getContext(), R.string.bt_must_enable, Toast.LENGTH_SHORT).show();
+			return;
 		}
-		return dialogView;
+		super.showDialog(state);
+		scanLeDevice(true);
+	}
+
+	@Override
+	protected void onBindDialogView(View view) {
+		super.onBindDialogView(view);
+
+		list = (ListView) view.findViewById(R.id.bth_found_list);
+		adapter = new BluetoothDeviceAdapter(getContext());
+		list.setAdapter(adapter);
+		list.setOnItemClickListener((adapterView, v, i, l) -> {
+			Log.d("BluetoothPreference", "item selected " + i);
+			final BluetoothDevice item = adapter.getItem(i);
+			setBluetoothAddress(item.getAddress());
+			BluetoothPreference.this.getDialog().dismiss();
+		});
 	}
 
 	@Override
@@ -106,8 +99,6 @@ public class BluetoothPreference extends DialogPreference {
 	@Override
 	protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
 		String val = restorePersistedValue ? getPersistedString("") : defaultValue.toString();
-		// need to persist here for default value to work
-		//setTime(getMinutes (time), getSeconds(time));
 		setSummary(val);
 	}
 
@@ -124,7 +115,6 @@ public class BluetoothPreference extends DialogPreference {
 		if (positiveResult) {
 			list.clearFocus();
 		}
-		super.onDialogClosed(positiveResult);
 		scanLeDevice(false);
 	}
 

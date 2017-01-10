@@ -125,4 +125,5 @@
 	<string name="lb_spo" translatable="false">SpO</string>
 	<string name="lb_empty_val" translatable="false">——</string>
 	<string name="time_added">Time added</string>
+	<string name="bt_must_enable">You must enable bluetooth</string>
 </resources>
