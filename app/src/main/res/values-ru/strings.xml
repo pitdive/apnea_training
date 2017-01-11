@@ -5,9 +5,10 @@
 	<string name="action_settings">Настройки</string>
 	<string name="nav_title_tables">Таблицы</string>
 	<string name="nav_title_settings">Настройки</string>
+	<string name="nav_title_donate">Пожертвовать</string>
 	<string name="nav_title_info">Информация</string>
 	<string name="nav_title_record">Лучшее время</string>
-	<string name="nav_title_spo">Журнал</string>
+	<string name="nav_title_spo">Журнал (демо)</string>
 	<string name="pref_notify_cat">Оповещения</string>
 	<string name="def_tab_title_co2">Гиперкапническая CO2</string>
 	<string name="def_tab_title_o2">Гипоксическая O2</string>

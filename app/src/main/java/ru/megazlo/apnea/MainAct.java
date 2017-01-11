@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.*;
 import android.content.*;
 import android.content.pm.ActivityInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -118,11 +119,13 @@ public class MainAct extends AppCompatActivity implements NavigationView.OnNavig
 			setFragment(new InfoFragment_().setResRawId(R.raw.info));
 		} else if (id == R.id.nav_graphs) {
 			setFragment(new ChartListFragment_());
-			dialogOxySoon();
 		} else if (id == R.id.nav_record) {
 			setFragment(new RecordFragment_());
 		} else if (id == R.id.nav_tables) {
 			setFragment(tabList);
+		} else if (id == R.id.nav_donate) {
+			Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9U6ZVN9KQAXCC"));
+			startActivity(browserIntent);
 		}
 
 		drawer.closeDrawer(GravityCompat.START);
@@ -132,8 +135,7 @@ public class MainAct extends AppCompatActivity implements NavigationView.OnNavig
 
 	@UiThread(delay = 300)
 	void dialogOxySoon() {
-		new AlertDialog.Builder(this)
-		.setView(getLayoutInflater().inflate(R.layout.dialog_oxi, null)).setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss()).create().show();
+		new AlertDialog.Builder(this).setView(getLayoutInflater().inflate(R.layout.dialog_oxi, null)).setPositiveButton(R.string.ok, (dialog, which) -> dialog.dismiss()).create().show();
 	}
 
 	public Fragment getVisibleFragment() {

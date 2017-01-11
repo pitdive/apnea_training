@@ -91,15 +91,9 @@ public class AlertService implements TextToSpeech.OnInitListener, Closeable {
 
 	private void notifyAlertSpeech(String textToSpeech) {
 		Log.i("TTS", textToSpeech);
-		showToast(textToSpeech);
 		if (pref.notifySpeech().get()) {
 			getTts().speak(textToSpeech, TextToSpeech.QUEUE_FLUSH, null);
 		}
-	}
-
-	@UiThread
-	void showToast(String text) {
-		Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -108,7 +102,7 @@ public class AlertService implements TextToSpeech.OnInitListener, Closeable {
 			int result = getTts().setLanguage(Locale.US);
 			if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
 				pref.edit().notifySpeech().put(false).apply();
-				Log.e("TTS", "Извините, этот язык не поддерживается");
+				Log.e("TTS", "язык не поддерживается");
 			}
 		}
 	}
