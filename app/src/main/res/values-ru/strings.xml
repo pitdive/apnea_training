@@ -5,7 +5,7 @@
 	<string name="action_settings">Настройки</string>
 	<string name="nav_title_tables">Таблицы</string>
 	<string name="nav_title_settings">Настройки</string>
-	<string name="nav_title_donate">Пожертвовать</string>
+	<string name="nav_title_donate">Помочь проекту</string>
 	<string name="nav_title_info">Информация</string>
 	<string name="nav_title_record">Лучшее время</string>
 	<string name="nav_title_spo">Журнал (демо)</string>
@@ -61,7 +61,7 @@
 	<string name="s_notify_vibrate">Вибрация при событии</string>
 	<string name="s_notify_voice">Голосовые оповещения</string>
 
-	<string name="s_allow_bt">При подключении больше расходуется батарея</string>
+	<string name="s_allow_bt">Нужен оксиметр Jumper JPD-500F</string>
 	<string name="t_allow_bt">Подключаться к оксиметру</string>
 
 	<string name="t_notify_minute">Каждую минуту</string>

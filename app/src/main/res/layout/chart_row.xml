@@ -8,7 +8,7 @@
 		android:layout_width="50sp"
 		android:layout_height="50sp"
 		android:paddingLeft="15sp"
-		android:src="@drawable/ic_graphs"/>
+		android:src="@drawable/ic_multiline_chart"/>
 
 	<TextView
 		android:id="@+id/chart_total_time"

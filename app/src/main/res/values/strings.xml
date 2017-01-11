@@ -80,7 +80,7 @@
 	<string name="s_notify_vibrate">Vibrate on notification</string>
 	<string name="s_notify_voice">Speech on notification</string>
 
-	<string name="s_allow_bt">When connecting the battery consumes more</string>
+	<string name="s_allow_bt">Need oximeter Jumper JPD-500F</string>
 	<string name="t_allow_bt">Connect oximeter</string>
 
 	<string name="t_notify_minute">Every minute</string>

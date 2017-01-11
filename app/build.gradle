@@ -42,7 +42,7 @@ android {
 		targetSdkVersion 25
 		versionCode 14
 		versionName '2.0'
-		versionNameSuffix 'beta 2'
+		versionNameSuffix 'beta 3'
 	}
 	compileOptions {
 		sourceCompatibility JavaVersion.VERSION_1_8
