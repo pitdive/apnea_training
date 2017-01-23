@@ -124,8 +124,7 @@ public class MainAct extends AppCompatActivity implements NavigationView.OnNavig
 		} else if (id == R.id.nav_tables) {
 			setFragment(tabList);
 		} else if (id == R.id.nav_donate) {
-			Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=9U6ZVN9KQAXCC"));
-			startActivity(browserIntent);
+			setFragment(new DonateFragment_());
 		}
 
 		drawer.closeDrawer(GravityCompat.START);

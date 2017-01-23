@@ -68,4 +68,5 @@ dependencies {
 	apt "org.projectlombok:lombok:$lom_ver"
 	/*compile "com.github.PhilJay:MPAndroidChart:v3.0.0-beta1"*/
 	compile 'com.github.lecho:hellocharts-library:1.5.8@aar'
+	compile files('libs/PayPal_MPL.jar')
 }
