@@ -129,5 +129,6 @@
 	<string name="bt_must_enable">You must enable bluetooth</string>
 
 	<string name="don_link">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=5GKKLYLACMU6W&amp;lc=US&amp;currency_code=USD</string>
-	<string name="donate_text">Thanks for</string>
+	<string name="donate_text">Special thanks for the help in the development of the project</string>
+	<string name="donate_text_you">You can help too</string>
 </resources>

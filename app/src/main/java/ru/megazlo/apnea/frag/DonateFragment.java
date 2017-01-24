@@ -7,13 +7,9 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import com.paypal.android.MEP.*;
-
 import org.androidannotations.annotations.*;
 import org.androidannotations.annotations.res.StringArrayRes;
 import org.androidannotations.annotations.res.StringRes;
-
-import java.math.BigDecimal;
 
 import ru.megazlo.apnea.R;
 
@@ -38,15 +34,8 @@ public class DonateFragment extends Fragment implements FabClickListener {
 
 	@Click(R.id.btn_donate_paypal)
 	void donatePaypal() {
-		PayPalPayment newPayment = new PayPalPayment();
-		newPayment.setSubtotal(new BigDecimal(10));
-		newPayment.setCurrencyType("USD");
-		newPayment.setRecipient("paradoxfm@yandex.ru");
-		newPayment.setMerchantName("Apnea");
-		Intent paypalIntent = PayPal.getInstance().checkout(newPayment, getActivity());
-		this.startActivityForResult(paypalIntent, 1);
-
-		//startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(donLink)));
+		//"https://www.paypal.me/paradoxfm/"
+		startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(donLink)));
 	}
 
 	@Override
